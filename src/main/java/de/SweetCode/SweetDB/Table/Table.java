@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class Table {
 
     private SweetDB sweetDB;
+    private ExecutorService executorService = Executors.newFixedThreadPool(100);
 
     private final File path;
     private final String name;
@@ -40,52 +42,17 @@ public class Table {
         this.name = path.getName().substring(0, path.getName().indexOf("."));
     }
 
+    public Table(SweetDB sweetDB, File path, Syntax syntax) {
+        this(sweetDB, path);
+        this.syntax = syntax;
+    }
+
     public File getPath() {
         return this.path;
     }
 
     public String getName() {
         return this.name;
-    }
-
-    public void store() {
-
-        JsonObject head = new JsonObject();
-
-        JsonObject table = new JsonObject();
-        JsonObject syntax = new JsonObject();
-
-        for(Map.Entry<String, DataType> entry : this.syntax.getSyntax().entrySet()) {
-            syntax.addProperty(entry.getKey(), entry.getValue().getName());
-        }
-
-        JsonArray data = new JsonArray();
-        for(DataSet entry : this.dataSets) {
-
-            JsonObject dataEntry = new JsonObject();
-            for(Field field : entry.getFields()) {
-                dataEntry.addProperty(field.getName(), field.getValue().toString());
-            }
-
-            data.add(dataEntry);
-
-        }
-
-        table.add("syntax", syntax);
-        head.add("table", table);
-        head.add("data", data);
-
-        try {
-
-            if(!(this.path.exists())) {
-                this.path.createNewFile();
-            }
-
-            FileUtils.write(this.path, head.toString(), "UTF-8", false);
-        } catch (IOException e) {
-            e.printStackTrace(); //TODO
-        }
-
     }
 
     public InsertAction insert() {
@@ -186,6 +153,57 @@ public class Table {
             //TODO invalid syntax
         }
 
+    }
+
+    public void store() {
+
+        Future<?> task = this.executorService.submit(() -> {
+
+            JsonObject headData = new JsonObject();
+
+            JsonObject tableData = new JsonObject();
+            JsonObject syntaxData = new JsonObject();
+
+            for(Map.Entry<String, DataType> entry : syntax.getSyntax().entrySet()) {
+                syntaxData.addProperty(entry.getKey(), entry.getValue().getName());
+            }
+
+            JsonArray data = new JsonArray();
+            for(DataSet entry : dataSets) {
+
+                JsonObject dataEntry = new JsonObject();
+                for(Field field : entry.getFields()) {
+                    dataEntry.addProperty(field.getName(), field.getValue().toString());
+                }
+
+                data.add(dataEntry);
+
+            }
+
+            tableData.add("syntax", syntaxData);
+            headData.add("table", tableData);
+            headData.add("data", data);
+
+            try {
+
+                if(!(path.exists())) {
+                    path.createNewFile();
+                }
+
+                FileUtils.write(path, headData.toString(), "UTF-8", false);
+            } catch (IOException e) {
+                e.printStackTrace(); //TODO
+            }
+
+        });
+
+        try {
+            task.get(30, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            task.cancel(true);
+        }
 
     }
 

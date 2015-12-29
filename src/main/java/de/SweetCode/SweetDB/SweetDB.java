@@ -46,6 +46,12 @@ public class SweetDB {
         return this.autosave;
     }
 
+    public void addTable(Table table) {
+
+        this.tables.add(table);
+
+    }
+
     public boolean tableExist(String tableName) {
 
         return this.table(tableName).isPresent();
