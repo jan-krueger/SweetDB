@@ -1,6 +1,5 @@
 package de.SweetCode.SweetDB.Table.Action;
 
-import com.sun.deploy.util.StringUtils;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.SweetDB;

@@ -68,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InsertAction.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="InsertAction.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/InsertAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.022309711">
+              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -80,10 +80,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Table.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Table.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Table.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7808399">
+            <state vertical-scroll-proportion="0.0">
               <caret line="207" column="25" selection-start-line="207" selection-start-column="25" selection-end-line="207" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -178,7 +178,6 @@
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/DataSet/Field.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Syntax/SyntaxRule.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/CreateTableAction.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/InsertAction.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Syntax/SyntaxRuleBuilder.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/DataSet/DataSet.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Syntax/Syntax.java" />
@@ -187,6 +186,7 @@
         <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Table.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/InsertAction.java" />
       </list>
     </option>
   </component>
@@ -343,6 +343,40 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Table" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SweetDB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SweetDB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SweetDB" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Table" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Action" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -669,12 +703,12 @@
       <updated>1451400474897</updated>
       <workItem from="1451400478955" duration="8324000" />
       <workItem from="1451409340324" duration="25346000" />
-      <workItem from="1451481128746" duration="13141000" />
+      <workItem from="1451481128746" duration="13303000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="46811000" />
+    <option name="totallyTimeSpent" value="46973000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1928" y="180" width="1936" height="1066" extended-state="6" />
@@ -1173,16 +1207,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/InsertAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/DataSet/DataSet.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1272,8 +1296,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Table.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7808399">
+        <state vertical-scroll-proportion="0.0">
           <caret line="207" column="25" selection-start-line="207" selection-start-column="25" selection-end-line="207" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/SweetCode/SweetDB/Table/Action/InsertAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.022309711">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
