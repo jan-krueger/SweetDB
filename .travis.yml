@@ -5,6 +5,9 @@ branches:
   only:
     - master
 
+script:
+  - mvn clean compile assembly:single
+
 before_deploy:
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
