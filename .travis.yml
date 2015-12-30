@@ -17,7 +17,7 @@ deploy:
   provider: releases
   api_key: $TOKEN
   file:
-    - "target/SweetDB.jar"
+    - "target/SweetDB-jar-with-dependencies.jar"
   on:
     tags: false
     all_branches: true
