@@ -15,7 +15,8 @@ public class SweetDBTest {
     public static void main(String[] args) {
 
         SweetDB sweetDB = new SweetDB("F:\\SweetDB", "users");
-        sweetDB.setDebugging(false);
+        sweetDB.debugging(false);
+        sweetDB.storageThreads(10);
         try {
             sweetDB.load();
         } catch (IOException e) {
@@ -26,57 +27,47 @@ public class SweetDBTest {
                 .name("users")
                 .overrideExisting(false)
                 .add(
-                        SyntaxRuleBuilder.create()
-                            .fieldName("id")
-                            .isUnique(true)
-                            .isAutoincrement(true)
-                            .dataType(DataTypes.INTEGER)
-                        .build()
+                    SyntaxRuleBuilder.create()
+                        .fieldName("id")
+                        .isUnique(true)
+                        .isAutoincrement(true)
+                        .dataType(DataTypes.INTEGER)
+                    .build()
                 )
                 .add(
-                        SyntaxRuleBuilder.create()
-                                .fieldName("name")
-                                .isNullable(true)
-                                .dataType(DataTypes.STRING)
-                                .build()
+                    SyntaxRuleBuilder.create()
+                        .fieldName("name")
+                        .isNullable(true)
+                        .dataType(DataTypes.STRING)
+                    .build()
                 )
                 .add(
-                        SyntaxRuleBuilder.create()
-                                .fieldName("active")
-                                .dataType(DataTypes.BOOLEAN)
-                                .build()
+                     SyntaxRuleBuilder.create()
+                        .fieldName("active")
+                        .dataType(DataTypes.BOOLEAN)
+                    .build()
                 )
                 .add(
-                        SyntaxRuleBuilder.create()
-                                .fieldName("time")
-                                .dataType(DataTypes.TIMESTAMP)
-                                .build()
+                    SyntaxRuleBuilder.create()
+                        .fieldName("time")
+                        .dataType(DataTypes.TIMESTAMP)
+                    .build()
                 )
                 .build();
 
         Table users = sweetDB.table("users").get();
         users.insert()
-                //.add("id", 2)
                 .add("name", "Jan")
                 .add("active", false)
                 .add("time", Timestamp.from(Instant.now()))
                 .build();
 
         users.insert()
-                //.add("id", 2)
                 .add("name", "Jonas")
                 .add("active", false)
                 .add("time", Timestamp.from(Instant.now()))
                 .build();
 
-        users.insert()
-                //.add("id", 2)
-                .add("name", "Hannah")
-                .add("active", false)
-                .add("time", Timestamp.from(Instant.now()))
-                .build();
-
-        users.store();
 
 
     }

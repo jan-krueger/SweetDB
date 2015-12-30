@@ -2,7 +2,6 @@ package de.SweetCode.SweetDB.Table;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sun.deploy.util.StringUtils;
 import de.SweetCode.SweetDB.DataSet.DataSet;
@@ -28,13 +27,8 @@ import java.util.stream.Collectors;
  */
 public class Table {
 
-    /**
-     * the number of threads in the pool
-     */
-    private static final int THREADS = 10;
-
     private SweetDB sweetDB;
-    private ExecutorService executorService = Executors.newFixedThreadPool(Table.THREADS);
+    private ExecutorService executorService = null;
 
     private final File path;
     private final String name;
@@ -47,6 +41,7 @@ public class Table {
         this.sweetDB = sweetDB;
         this.path = path;
         this.name = path.getName().substring(0, path.getName().indexOf("."));
+        this.executorService = Executors.newFixedThreadPool(this.sweetDB.getStorageThreads());
     }
 
     public Table(SweetDB sweetDB, File path, List<SyntaxRule> syntaxRules) {
@@ -203,7 +198,7 @@ public class Table {
 
                     dataSets.forEach(entry -> {
 
-                        if(!(this.syntax.validate(entry.getAsJsonObject()))) {
+                        if(!(this.syntax.parseValidation(entry.getAsJsonObject()))) {
                             throw new IllegalArgumentException(String.format(
                                     "Invalid syntax in \"%s\" -> %s expected %s. Missing field(s): %s",
                                     this.getName(),
@@ -212,8 +207,6 @@ public class Table {
                                     StringUtils.join(this.syntax.missingFields(entry.getAsJsonObject()), ", ")
                             ));
                         }
-
-                        System.out.println(entry.getAsJsonObject().entrySet().isEmpty());
 
                         List<Field> fields = entry.getAsJsonObject().entrySet().stream().map(field -> new Field(this.sweetDB, this, field.getKey(), this.syntax.get(field.getKey()).getDataType().parse((field.getValue().isJsonNull() ? null : field.getValue().getAsString())))).collect(Collectors.toList());
 
@@ -237,7 +230,7 @@ public class Table {
     public void store() {
 
         if(this.executorService.isShutdown()) {
-            this.executorService = Executors.newFixedThreadPool(10);
+            this.executorService = Executors.newFixedThreadPool(this.sweetDB.getStorageThreads());
         }
 
         Future<?> task = this.executorService.submit(() -> {

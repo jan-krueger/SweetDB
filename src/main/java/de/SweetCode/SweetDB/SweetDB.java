@@ -21,6 +21,7 @@ public class SweetDB {
     private final File parityPath;
 
     private boolean autosave = false;
+    private int storageThreads = 10;
 
     private boolean debugging = false;
 
@@ -40,16 +41,32 @@ public class SweetDB {
         this.autosave = autosave;
     }
 
+    /**
+     * Returns the path to the root of database.
+     * @return
+     */
     public File getPath() {
         return this.path;
     }
 
+    /**
+     * Returns all tables.
+     * @return
+     */
     public List<Table> getTables() {
         return this.tables;
     }
 
+    /**
+     * Returns true if the debugging modus is active.
+     * @return
+     */
     public boolean isDebugging() {
         return this.debugging;
+    }
+
+    public int getStorageThreads() {
+        return this.storageThreads;
     }
 
     public boolean isAutosave() {
@@ -78,8 +95,18 @@ public class SweetDB {
         return new CreateTableAction(this);
     }
 
-    public void setDebugging(boolean debugging) {
+    public void debugging(boolean debugging) {
         this.debugging = debugging;
+    }
+
+    public void storageThreads(int storageThreads) {
+        this.storageThreads = storageThreads;
+    }
+
+    public void store() {
+
+        this.tables.forEach(table -> table.store());
+
     }
 
     public void load() throws IOException {

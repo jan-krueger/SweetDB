@@ -150,7 +150,7 @@ public class Syntax {
      * @param object
      * @return
      */
-    public boolean validate(JsonObject object) {
+    public boolean parseValidation(JsonObject object) {
 
         //TODO improve validation
 
@@ -167,8 +167,6 @@ public class Syntax {
             if(!(entry.getValue().isNullable()) && !(entry.getValue().isAutoincrement())) {
 
                 if(object.get(entry.getKey()).isJsonNull()) {
-                    System.out.println(entry.getKey());
-                    System.out.println(object.get(entry.getKey()));
                     return false;
                 }
 

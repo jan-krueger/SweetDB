@@ -1,0 +1,27 @@
+language: java
+jdk:
+  - oraclejdk8
+branches:
+  only:
+    - master
+
+before_deploy:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - export GIT_TAG=$TRAVIS_BRANCH-v0.1.$TRAVIS_BUILD_NUMBER-beta
+  - git tag $GIT_TAG -a -m "\nThis is a automaticlly deployed version of the project. This version was also tested by unit tests and only when it went through the tests it will be deployed, but this isn't a guarantee for a version without bugs."
+  - git push -q https://$TOKEN@github.com/sweetcode/SweetDB --tags
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key: $TOKEN
+  file:
+    - "target/SweetDB.jar"
+  on:
+    tags: false
+    all_branches: true
+
+branches:
+  except:
+    - /^*-v[0-9]/
