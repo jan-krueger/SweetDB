@@ -1,5 +1,6 @@
 import de.SweetCode.SweetDB.DataType.DataTypes;
 import de.SweetCode.SweetDB.SweetDB;
+import de.SweetCode.SweetDB.Table.Syntax.SyntaxRuleBuilder;
 import de.SweetCode.SweetDB.Table.Table;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class SweetDBTest {
     public static void main(String[] args) {
 
         SweetDB sweetDB = new SweetDB("F:\\SweetDB", "users");
+        sweetDB.setDebugging(false);
         try {
             sweetDB.load();
         } catch (IOException e) {
@@ -22,33 +24,60 @@ public class SweetDBTest {
 
         sweetDB.createTable()
                 .name("users")
-                .add("id", DataTypes.INTEGER)
-                .add("name", DataTypes.STRING)
-                .add("active", DataTypes.BOOLEAN)
-                .add("time", DataTypes.TIMESTAMP)
+                .overrideExisting(false)
+                .add(
+                        SyntaxRuleBuilder.create()
+                            .fieldName("id")
+                            .isUnique(true)
+                            .isAutoincrement(true)
+                            .dataType(DataTypes.INTEGER)
+                        .build()
+                )
+                .add(
+                        SyntaxRuleBuilder.create()
+                                .fieldName("name")
+                                .isNullable(true)
+                                .dataType(DataTypes.STRING)
+                                .build()
+                )
+                .add(
+                        SyntaxRuleBuilder.create()
+                                .fieldName("active")
+                                .dataType(DataTypes.BOOLEAN)
+                                .build()
+                )
+                .add(
+                        SyntaxRuleBuilder.create()
+                                .fieldName("time")
+                                .dataType(DataTypes.TIMESTAMP)
+                                .build()
+                )
                 .build();
 
         Table users = sweetDB.table("users").get();
+        users.insert()
+                //.add("id", 2)
+                .add("name", "Jan")
+                .add("active", false)
+                .add("time", Timestamp.from(Instant.now()))
+                .build();
 
-        long time = System.currentTimeMillis();
-        for(int i = 0; i < 10; i++) {
-            users.insert()
-                    .add("id", i)
-                    .add("name", "A")
-                    .add("active", true)
-                    .add("time", Timestamp.from(Instant.now()))
-                    .build();
-        }
+        users.insert()
+                //.add("id", 2)
+                .add("name", "Jonas")
+                .add("active", false)
+                .add("time", Timestamp.from(Instant.now()))
+                .build();
 
-        System.out.println("Time to STORE 10000 items: " + (System.currentTimeMillis() - time));
+        users.insert()
+                //.add("id", 2)
+                .add("name", "Hannah")
+                .add("active", false)
+                .add("time", Timestamp.from(Instant.now()))
+                .build();
 
-        time = System.currentTimeMillis();
-        try {
-            sweetDB.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Time to LOAD 10000 items: " + (System.currentTimeMillis() - time));
+        users.store();
+
 
     }
 

@@ -22,6 +22,8 @@ public class SweetDB {
 
     private boolean autosave = false;
 
+    private boolean debugging = false;
+
     private final List<Table> tables = new ArrayList<>();
 
     public SweetDB(String path, String... tables) {
@@ -40,6 +42,14 @@ public class SweetDB {
 
     public File getPath() {
         return this.path;
+    }
+
+    public List<Table> getTables() {
+        return this.tables;
+    }
+
+    public boolean isDebugging() {
+        return this.debugging;
     }
 
     public boolean isAutosave() {
@@ -68,6 +78,10 @@ public class SweetDB {
         return new CreateTableAction(this);
     }
 
+    public void setDebugging(boolean debugging) {
+        this.debugging = debugging;
+    }
+
     public void load() throws IOException {
 
         if(!(this.path.exists())) {
@@ -76,7 +90,6 @@ public class SweetDB {
                     this.path.getPath()
             ));
         }
-
 
         Iterator<Table> iterator = this.tables.iterator();
         while(iterator.hasNext()) {
@@ -111,7 +124,6 @@ public class SweetDB {
                 StringBuilder stringBuilder = new StringBuilder();
 
                 lineIterator.forEachRemaining(line -> stringBuilder.append(line));
-
                 raw = Optional.of(stringBuilder.toString());
 
             } finally {

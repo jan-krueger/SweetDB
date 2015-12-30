@@ -21,6 +21,10 @@ public class DataSet {
         return this.fields;
     }
 
+    public void addField(Field field) {
+        this.fields.add(field);
+    }
+
     public Optional<Field> get(String name) {
 
         return this.fields.stream().filter(field -> field.getName().equals(name)).findFirst();

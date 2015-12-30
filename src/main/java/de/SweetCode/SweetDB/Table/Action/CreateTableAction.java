@@ -3,9 +3,12 @@ package de.SweetCode.SweetDB.Table.Action;
 import de.SweetCode.SweetDB.DataType.DataType;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Syntax.Syntax;
+import de.SweetCode.SweetDB.Table.Syntax.SyntaxRule;
 import de.SweetCode.SweetDB.Table.Table;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,9 +17,10 @@ import java.util.Optional;
 public class CreateTableAction {
 
     private Optional<String> name = Optional.empty();
+    private boolean overrideExisting = false;
 
     private SweetDB sweetDB;
-    private Syntax syntax = new Syntax();
+    private List<SyntaxRule> syntax = new ArrayList<>();
 
     public CreateTableAction(SweetDB sweetDB) {
         this.sweetDB = sweetDB;
@@ -27,19 +31,44 @@ public class CreateTableAction {
         return this;
     }
 
-    public CreateTableAction add(String fieldName, DataType dataType) {
-        this.syntax.add(fieldName, dataType);
+    public CreateTableAction overrideExisting(boolean overrideExisting) {
+        this.overrideExisting = overrideExisting;
         return this;
     }
 
-    public void build() {
+    public CreateTableAction add(SyntaxRule syntaxRule) {
+        this.syntax.add(syntaxRule);
+        return this;
+    }
+
+    public boolean build() {
 
         if(!(this.name.isPresent())) {
-            throw new IllegalArgumentException("Set the name before using the build method.");
+            if(this.sweetDB.isDebugging()) {
+                throw new IllegalArgumentException("Set the name before using the build method.");
+            } else {
+                return false;
+            }
         }
 
-        if(this.syntax.getSyntax().isEmpty()) {
-            throw new IllegalArgumentException("You have to add at least one syntax rule before using the build method.");
+        if(this.syntax.isEmpty()) {
+            if(this.sweetDB.isDebugging()) {
+                throw new IllegalArgumentException("You have to add at least one syntax rule before using the build method.");
+            } else {
+                return false;
+            }
+        }
+
+        if(!(this.overrideExisting) && this.sweetDB.tableExist(this.name.get())) {
+            if(this.sweetDB.isDebugging()) {
+                throw new IllegalArgumentException("The table %s already exists.");
+            } else {
+                return false;
+            }
+        }
+
+        if(this.overrideExisting && this.sweetDB.tableExist(this.name.get())) {
+            this.sweetDB.table(this.name.get()).get().drop();
         }
 
         Table table = new Table(this.sweetDB, new File(this.sweetDB.getPath() + File.separator + this.name.get() + ".sweet"), this.syntax);
@@ -49,6 +78,8 @@ public class CreateTableAction {
         if(this.sweetDB.isAutosave()) {
             table.store();
         }
+
+        return true;
 
     }
 
