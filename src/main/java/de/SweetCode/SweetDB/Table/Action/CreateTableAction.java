@@ -1,8 +1,6 @@
 package de.SweetCode.SweetDB.Table.Action;
 
-import de.SweetCode.SweetDB.DataType.DataType;
 import de.SweetCode.SweetDB.SweetDB;
-import de.SweetCode.SweetDB.Table.Syntax.Syntax;
 import de.SweetCode.SweetDB.Table.Syntax.SyntaxRule;
 import de.SweetCode.SweetDB.Table.Table;
 

@@ -1,6 +1,9 @@
 package de.SweetCode.SweetDB.DataSet;
 
+import de.SweetCode.SweetDB.Table.Table;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,11 +12,15 @@ import java.util.Optional;
  */
 public class DataSet {
 
+    private Table table;
     private List<Field> fields = new ArrayList<>();
 
-    public DataSet() {}
+    public DataSet(Table table) {
+        this.table = table;
+    }
 
-    public DataSet(List<Field> fields) {
+    public DataSet(Table table, List<Field> fields) {
+        this(table);
         this.fields = fields;
     }
 
@@ -31,5 +38,28 @@ public class DataSet {
 
     }
 
+    public boolean delete() {
+
+        Iterator<DataSet> iterator = this.table.all().iterator();
+
+        if(!(iterator.hasNext())) {
+            return false;
+        }
+
+        while(iterator.hasNext()) {
+
+            if(iterator.next().equals(this)) {
+                iterator.remove();
+                break;
+            }
+
+        }
+
+        if(this.table.getDatabase().isAutosave()) {
+            this.table.store();
+        }
+
+        return true;
+    }
 
 }

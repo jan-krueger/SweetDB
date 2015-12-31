@@ -223,7 +223,7 @@ public class Table {
 
                         List<Field> fields = entry.getAsJsonObject().entrySet().stream().map(field -> new Field(this.sweetDB, this, field.getKey(), this.syntax.get(field.getKey()).getDataType().parse((field.getValue().isJsonNull() ? null : field.getValue().getAsString())))).collect(Collectors.toList());
 
-                        this.dataSets.add(new DataSet(fields));
+                        this.dataSets.add(new DataSet(this, fields));
 
                     });
 

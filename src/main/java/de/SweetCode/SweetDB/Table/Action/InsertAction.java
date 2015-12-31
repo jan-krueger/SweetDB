@@ -41,7 +41,7 @@ public class InsertAction {
 
     public boolean build() {
 
-        DataSet dataSet = new DataSet(this.fields);
+        DataSet dataSet = new DataSet(this.table, this.fields);
 
         if(!(this.syntax.validate(dataSet))) {
             if(this.sweetDB.isDebugging()) {

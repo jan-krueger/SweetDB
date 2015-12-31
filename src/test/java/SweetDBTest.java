@@ -1,3 +1,4 @@
+import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataType.DataTypes;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Syntax.SyntaxRuleBuilder;
@@ -6,6 +7,7 @@ import de.SweetCode.SweetDB.Table.Table;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -24,38 +26,39 @@ public class SweetDBTest {
         }
 
         sweetDB.createTable()
-                .name("users")
-                .overrideExisting(false)
+            .name("users")
+            .overrideExisting(true)
                 .add(
                     SyntaxRuleBuilder.create()
-                        .fieldName("id")
-                        .isUnique(true)
-                        .isAutoincrement(true)
-                        .dataType(DataTypes.INTEGER)
-                    .build()
-                )
-                .add(
-                    SyntaxRuleBuilder.create()
-                        .fieldName("name")
-                        .isNullable(true)
-                        .dataType(DataTypes.STRING)
-                    .build()
-                )
-                .add(
-                     SyntaxRuleBuilder.create()
-                        .fieldName("active")
-                        .dataType(DataTypes.BOOLEAN)
-                    .build()
-                )
-                .add(
-                    SyntaxRuleBuilder.create()
-                        .fieldName("time")
-                        .dataType(DataTypes.TIMESTAMP)
-                    .build()
-                )
-                .build();
+                            .fieldName("id")
+                            .isUnique(true)
+                            .isAutoincrement(true)
+                            .dataType(DataTypes.INTEGER)
+                        .build()
+                    )
+                    .add(
+                        SyntaxRuleBuilder.create()
+                            .fieldName("name")
+                            .isNullable(true)
+                            .dataType(DataTypes.STRING)
+                        .build()
+                    )
+                    .add(
+                            SyntaxRuleBuilder.create()
+                                    .fieldName("active")
+                                    .dataType(DataTypes.BOOLEAN)
+                                    .build()
+                    )
+                    .add(
+                            SyntaxRuleBuilder.create()
+                                    .fieldName("time")
+                                    .dataType(DataTypes.TIMESTAMP)
+                                    .build()
+                    )
+        .build();
 
         Table users = sweetDB.table("users").get();
+
         users.insert()
                 .add("name", "Jan")
                 .add("active", false)
@@ -69,6 +72,19 @@ public class SweetDBTest {
                 .build();
 
 
+Optional<DataSet> result =users.findFirst(dataSet -> {
+
+    if (dataSet.get("name").get().getValue().equals("Jan")) {
+        return true;
+    }
+
+    return false;
+
+});
+
+        result.get().get("name").get().update("Michael");
+
+        sweetDB.store();
 
     }
 
