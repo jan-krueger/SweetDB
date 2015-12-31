@@ -58,11 +58,7 @@ public class CreateTableAction {
         }
 
         if(!(this.overrideExisting) && this.sweetDB.tableExist(this.name.get())) {
-            if(this.sweetDB.isDebugging()) {
-                throw new IllegalArgumentException("The table %s already exists.");
-            } else {
-                return false;
-            }
+            return false;
         }
 
         if(this.overrideExisting && this.sweetDB.tableExist(this.name.get())) {

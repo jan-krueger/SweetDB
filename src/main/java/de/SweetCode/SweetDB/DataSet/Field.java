@@ -9,14 +9,12 @@ import de.SweetCode.SweetDB.Table.Table;
  */
 public class Field<T> {
 
-    private SweetDB sweetDB;
     private Table table;
 
     private String name;
     private T value;
 
-    public Field(SweetDB sweetDB, Table table, String name, T value) {
-        this.sweetDB = sweetDB;
+    public Field(Table table, String name, T value) {
         this.table = table;
         this.name = name;
         this.value = value;
@@ -62,12 +60,33 @@ public class Field<T> {
      * Updates the value.
      * @param value
      */
-    public void update(T value) {
+    public boolean update(T value) {
+
+        if(this.value == value) {
+            return true;
+        }
+
+        T tmp = this.value;
         this.value = value;
 
-        if(this.sweetDB.isAutosave()) {
+        if(!(this.table.getSyntax().validate(this))) {
+
+            this.value = tmp;
+
+            if(this.table.getDatabase().isDebugging()) {
+                throw new IllegalArgumentException("You provided an invalid value.");
+            } else {
+                return false;
+            }
+
+        }
+
+        if(this.table.getDatabase().isAutosave()) {
             this.table.store();
         }
+
+        return true;
+
     }
 
 }

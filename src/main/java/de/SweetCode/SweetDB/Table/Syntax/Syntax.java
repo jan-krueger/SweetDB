@@ -4,6 +4,7 @@ package de.SweetCode.SweetDB.Table.Syntax;
 import com.google.gson.JsonObject;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
+import de.SweetCode.SweetDB.DataType.DataTypes;
 import de.SweetCode.SweetDB.Table.Table;
 
 import java.util.HashMap;
@@ -87,6 +88,46 @@ public class Syntax {
 
     }
 
+    public boolean validate(Field field) {
+
+        SyntaxRule syntaxRule = this.syntax.get(field.getName());
+
+        if(syntaxRule == null) {
+            return false;
+        }
+
+        if(!(syntaxRule.isNullable())) {
+
+            if(field.getValue() == null) {
+                return false;
+            }
+
+        }
+
+        if(syntaxRule.isAutoincrement()) {
+
+            try {
+                if (field.as(DataTypes.INTEGER) == null || field.as(DataTypes.LONG) == null) {
+                    return false;
+                }
+            } catch(Exception e) {
+                return false;
+            }
+
+        }
+
+        if(syntaxRule.isUnique() || syntaxRule.isAutoincrement()) {
+
+            if(this.table.all().stream().filter(dataSet -> dataSet.get(field.getName()).get().getValue().equals(field.getValue())).findAny().isPresent()) {
+                return false;
+            }
+
+        }
+
+        return true;
+
+    }
+
     /**
      * Checks the data set against the defined syntax rules.
      * @param dataSet
@@ -122,7 +163,6 @@ public class Syntax {
                     dataSet.get(entry.getKey()).get().update(aiValue);
                 } else {
                     dataSet.addField(new Field(
-                            this.table.getDatabase(),
                             this.table,
                             entry.getKey(),
                             aiValue

@@ -34,7 +34,7 @@ public class InsertAction {
      * @return
      */
     public <T> InsertAction add(String name, T value) {
-        this.fields.add(new Field<T>(this.sweetDB, this.table, name, value));
+        this.fields.add(new Field<T>(this.table, name, value));
         return this;
     }
 

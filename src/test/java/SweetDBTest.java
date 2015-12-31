@@ -17,7 +17,7 @@ public class SweetDBTest {
     public static void main(String[] args) {
 
         SweetDB sweetDB = new SweetDB("F:\\SweetDB", "users");
-        sweetDB.debugging(false);
+        sweetDB.debugging(true);
         sweetDB.storageThreads(10);
         try {
             sweetDB.load();
@@ -27,7 +27,7 @@ public class SweetDBTest {
 
         sweetDB.createTable()
             .name("users")
-            .overrideExisting(true)
+            .overrideExisting(false)
                 .add(
                     SyntaxRuleBuilder.create()
                             .fieldName("id")
@@ -60,29 +60,24 @@ public class SweetDBTest {
         Table users = sweetDB.table("users").get();
 
         users.insert()
-                .add("name", "Jan")
-                .add("active", false)
-                .add("time", Timestamp.from(Instant.now()))
-                .build();
-
-        users.insert()
                 .add("name", "Jonas")
-                .add("active", false)
+                .add("active", true)
                 .add("time", Timestamp.from(Instant.now()))
                 .build();
 
+        Optional<DataSet> result = users.findFirst(dataSet -> {
 
-Optional<DataSet> result =users.findFirst(dataSet -> {
+            if (dataSet.get("name").get().getValue().equals("Jonas")) {
+                return true;
+            }
 
-    if (dataSet.get("name").get().getValue().equals("Jan")) {
-        return true;
-    }
+            return false;
 
-    return false;
+        });
 
-});
-
-        result.get().get("name").get().update("Michael");
+        if(result.isPresent()) {
+            result.get().get("time").get().update(Timestamp.from(Instant.now()));
+        }
 
         sweetDB.store();
 
