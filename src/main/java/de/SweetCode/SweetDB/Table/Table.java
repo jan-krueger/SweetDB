@@ -80,12 +80,26 @@ public class Table {
      * Inserts a DataSet into the table.
      * @param dataSet
      */
-    public void insert(DataSet dataSet) {
+    public boolean insert(DataSet dataSet) {
+
+        if(!(this.syntax.validate(dataSet))) {
+            if(this.sweetDB.isDebugging()) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid insert query.",
+                        this.syntax.getAsString()
+                ));
+            } else {
+                return false;
+            }
+        }
+
         this.dataSets.add(dataSet);
 
         if(this.sweetDB.isAutosave()) {
             this.store();
         }
+
+        return true;
     }
 
     /**
