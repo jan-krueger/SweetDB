@@ -1,8 +1,8 @@
 package de.SweetCode.Test.SweetDB;
 
-import de.SweetCode.SweetDB.DataType.DataTypes;
+import de.SweetCode.SweetDB.DataSet.DataSet;
+import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.SweetDB;
-import de.SweetCode.SweetDB.Table.Syntax.SyntaxRuleBuilder;
 import de.SweetCode.SweetDB.Table.Table;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -39,6 +39,7 @@ public class SweetDBTest {
         this.database = new SweetDB(this.databasePath, "users-mockup");
         this.database.debugging(true);
         this.database.storageThreads(2);
+        this.database.load();
 
     }
 
@@ -120,6 +121,45 @@ public class SweetDBTest {
                 this.database.table("users-mockup").isPresent(),
                 true
         );
+
+    }
+
+    @Test
+    public void testFindMethods() {
+
+        Table table = this.database.table("users-mockup").get();
+
+        Assert.assertEquals(
+                table.find(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isEmpty(),
+                false
+        );
+
+        Assert.assertEquals(
+                table.findAny(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isPresent(),
+                true
+        );
+
+        Assert.assertEquals(
+                table.findFirst(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isPresent(),
+                true
+        );
+
+    }
+
+    @Test
+    public void testDataSet() {
+
+        Table table = this.database.table("users-mockup").get();
+
+        DataSet dataSet = table.findFirst(entry -> entry.get("name").get().getValue().equals("Jan")).get();
+
+        Field field = dataSet.get("name").get();
+        Assert.assertEquals(field.getName(), "name");
+        Assert.assertEquals(field.getValue().toString(), "Jan");
+
+        Assert.assertEquals(dataSet.getFields().size(), 4);
+
+        Assert.assertEquals(dataSet.delete(), true);
 
     }
 
