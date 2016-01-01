@@ -1,7 +1,6 @@
 package de.SweetCode.SweetDB.DataSet;
 
 import de.SweetCode.SweetDB.DataType.DataType;
-import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Table;
 
 /**
