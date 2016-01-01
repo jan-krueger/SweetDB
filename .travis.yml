@@ -5,11 +5,9 @@ branches:
   only:
     - master
 
-before_install:
-  - pip install --user codecov
+# Include environment variables to store per build
 after_success:
-  - codecov
-
+  - bash <(curl -s https://codecov.io/bash) -e TOX_ENV,CUSTOM_VAR || echo "Codecov did not collect coverage reports"
 script:
   - mvn clean compile assembly:single
 
@@ -17,7 +15,7 @@ before_deploy:
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
   - export GIT_TAG=$TRAVIS_BRANCH-v0.1.$TRAVIS_BUILD_NUMBER-beta
-  - git tag $GIT_TAG -a -m "\nThis is a automaticlly deployed version of the project. This version was also tested by unit tests and only when it went through the tests it will be deployed, but this isn't a guarantee for a version without bugs."
+  - git tag $GIT_TAG -a -m "This is a automaticlly deployed version of the project. This version was also tested by unit tests and only when it went through the tests it will be deployed, but this isn't a guarantee for a version without bugs."
   - git push -q https://$TOKEN@github.com/sweetcode/SweetDB --tags
 
 deploy:
