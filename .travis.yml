@@ -11,7 +11,7 @@ before_script:
 # Include environment variables to store per build
 
 script:
-  - mvn clean compile assembly:single
+  - mvn clean compile assembly:single verify
 
 before_deploy:
   - git config --global user.email "builds@travis-ci.com"
@@ -22,7 +22,6 @@ before_deploy:
 
 after_success:
   - codecov
-  - bash <(curl -s https://codecov.io/bash) -e TOX_ENV,CUSTOM_VAR || echo "Codecov did not collect coverage reports"
 
 deploy:
   skip_cleanup: true
