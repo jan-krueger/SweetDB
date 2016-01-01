@@ -51,8 +51,8 @@ public class Field<T> {
      * @param <V>
      * @return
      */
-    public <V> V as(Class<V> clazz) {
-        return clazz.cast(this.value);
+    public <V> V as(V clazz) {
+        return (V) clazz.getClass().cast(this.value);
     }
 
     /**

@@ -151,12 +151,24 @@ public class Syntax {
 
             if(entry.getValue().isAutoincrement()) {
 
-                long aiValue = 0;
+                Object aiValue = 0;
 
                 if(!(this.table.all().isEmpty())) {
 
-                    final long tmp = aiValue;
-                    aiValue = (long) this.table.all().stream().filter(filterEntry -> (long) filterEntry.get(entry.getKey()).get().getValue() > tmp).findAny().get().get(entry.getKey()).get().getValue();
+                    if(entry.getValue().getDataType() == DataTypes.INTEGER) {
+                        final int tmp = (int) aiValue;
+                        aiValue = (int) this.table.all().stream().filter(
+                                filterEntry -> (int) filterEntry.get(entry.getKey()).get().getValue() > tmp
+                        ).findAny().get().get(entry.getKey()).get().getValue() + 1;
+                    }
+
+                    if(entry.getValue().getDataType() == DataTypes.LONG) {
+                        final long tmp = (long) aiValue;
+                        aiValue = (long) this.table.all().stream().filter(
+                                filterEntry -> (long) filterEntry.get(entry.getKey()).get().getValue() > tmp
+                        ).findAny().get().get(entry.getKey()).get().getValue() + 1;
+                    }
+
                     /*aiValue = (int) this.table.all().get(
                             this.table.all().size() - 1
                     ).get(entry.getKey()).get().getValue() + 1;*/
