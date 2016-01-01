@@ -74,9 +74,18 @@ public class SweetDB {
         return this.autosave;
     }
 
-    public void addTable(Table table) {
+    public boolean addTable(Table table) {
+
+        if(table == null) {
+            return false;
+        }
+
+        if(this.tableExist(table.getName())) {
+            return false;
+        }
 
         this.tables.add(table);
+        return true;
 
     }
 
