@@ -2,6 +2,7 @@ package de.SweetCode.Test.SweetDB;
 
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
+import de.SweetCode.SweetDB.DataType.DataTypes;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Table;
 import org.apache.commons.io.FileUtils;
@@ -13,6 +14,9 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  * Created by Yonas on 01.01.2016.
@@ -153,13 +157,62 @@ public class SweetDBTest {
 
         DataSet dataSet = table.findFirst(entry -> entry.get("name").get().getValue().equals("Jan")).get();
 
-        Field field = dataSet.get("name").get();
-        Assert.assertEquals(field.getName(), "name");
-        Assert.assertEquals(field.getValue().toString(), "Jan");
-
         Assert.assertEquals(dataSet.getFields().size(), 4);
 
         Assert.assertEquals(dataSet.delete(), true);
+
+    }
+
+    @Test
+    public void testInsert() {
+
+        Table table = this.database.table("users-mockup").get();
+        boolean value = table.insert()
+                .add("name", "Yonas")
+                .add("active", true)
+                .add("time", Timestamp.from(Instant.now()))
+                .build();
+
+        Assert.assertEquals(value, true);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidInsert() {
+
+        Table table = this.database.table("users-mockup").get();
+        table.insert()
+            .add("active", false)
+            .add("time", Timestamp.from(Instant.now()))
+        .build();
+
+    }
+
+    @Test
+    public void testField() {
+
+        Table table = this.database.table("users-mockup").get();
+
+        DataSet dataSet = table.findFirst(entry -> entry.get("name").get().getValue().equals("Jan")).get();
+
+        Field field = dataSet.get("name").get();
+        Assert.assertEquals(field.getName(), "name");
+        Assert.assertEquals(field.getValue().toString(), "Jan");
+        Assert.assertEquals(field.as(String.class).getClass().isAssignableFrom(String.class), true);
+        Assert.assertEquals(field.as(DataTypes.STRING).getClass().isAssignableFrom(String.class), true);
+        Assert.assertEquals(field.update("m0ys"), true);
+
+    }
+
+    @Test
+    public void testStoreAndDrop() {
+
+        Table table = this.database.table("users-mockup").get();
+        table.store();
+
+        table.drop();
+
+        Assert.assertEquals(this.database.table("users-mockup").isPresent(), false);
 
     }
 
