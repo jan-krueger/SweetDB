@@ -157,24 +157,17 @@ public class Syntax {
                 if(!(this.table.all().isEmpty())) {
 
                     if(entry.getValue().getDataType() == DataTypes.INTEGER) {
-                        for(DataSet searchValue : this.table.all()) {
-                            if((int)searchValue.get(entry.getKey()).get().getValue() > (int) aiValue) {
-                                aiValue = (int) searchValue.get(entry.getKey()).get().getValue() + 2;
-                            }
-                        }
+                        aiValue = (int) this.table.all().get(
+                                this.table.all().size() - 1
+                        ).get(entry.getKey()).get().getValue() + 1;
                     }
 
                     if(entry.getValue().getDataType() == DataTypes.LONG) {
-                        for(DataSet searchValue : this.table.all()) {
-                            if((long)searchValue.get(entry.getKey()).get().getValue() > (long) aiValue) {
-                                aiValue = (long) searchValue.get(entry.getKey()).get().getValue() + 2;
-                            }
-                        }
+                        aiValue = (long) this.table.all().get(
+                                this.table.all().size() - 1
+                        ).get(entry.getKey()).get().getValue() + 1;
                     }
 
-                    /*aiValue = (int) this.table.all().get(
-                            this.table.all().size() - 1
-                    ).get(entry.getKey()).get().getValue() + 1;*/
                 }
 
                 if(dataSet.get(entry.getKey()).isPresent()) {
@@ -191,14 +184,7 @@ public class Syntax {
 
             if(entry.getValue().isUnique()) {
 
-                if(!(this.table.find(content -> {
-                    boolean v = content.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue());
-                    if(v) {
-                        System.out.println(content.get(entry.getKey()).get().getValue());
-                        System.out.println(dataSet.get(entry.getKey()).get().getValue());
-                    }
-                    return v;
-                }).isEmpty())) {
+                if(!(this.table.find(content -> content.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue())).isEmpty())) {
 
                     return false;
                 }
