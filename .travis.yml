@@ -5,6 +5,11 @@ branches:
   only:
     - master
 
+before_install:
+  - pip install --user codecov
+after_success:
+  - codecov
+
 script:
   - mvn clean compile assembly:single
 
