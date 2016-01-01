@@ -198,7 +198,6 @@ public class SweetDBTest {
         Field field = dataSet.get("name").get();
         Assert.assertEquals(field.getName(), "name");
         Assert.assertEquals(field.getValue().toString(), "Jan");
-        Assert.assertEquals(field.as(String.class).getClass().isAssignableFrom(String.class), true);
         Assert.assertEquals(field.as(DataTypes.STRING).getClass().isAssignableFrom(String.class), true);
         Assert.assertEquals(field.update("m0ys"), true);
 

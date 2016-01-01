@@ -144,6 +144,7 @@ public class Syntax {
             if(!(entry.getValue().isNullable()) && !(entry.getValue().isAutoincrement())) {
 
                 if(dataSet.get(entry.getKey()).get().getValue() == null) {
+                    System.out.println("A");
                     return false;
                 }
 
@@ -156,17 +157,19 @@ public class Syntax {
                 if(!(this.table.all().isEmpty())) {
 
                     if(entry.getValue().getDataType() == DataTypes.INTEGER) {
-                        final int tmp = (int) aiValue;
-                        aiValue = (int) this.table.all().stream().filter(
-                                filterEntry -> (int) filterEntry.get(entry.getKey()).get().getValue() > tmp
-                        ).findAny().get().get(entry.getKey()).get().getValue() + 1;
+                        for(DataSet searchValue : this.table.all()) {
+                            if((int)searchValue.get(entry.getKey()).get().getValue() > (int) aiValue) {
+                                aiValue = (int) searchValue.get(entry.getKey()).get().getValue() + 2;
+                            }
+                        }
                     }
 
                     if(entry.getValue().getDataType() == DataTypes.LONG) {
-                        final long tmp = (long) aiValue;
-                        aiValue = (long) this.table.all().stream().filter(
-                                filterEntry -> (long) filterEntry.get(entry.getKey()).get().getValue() > tmp
-                        ).findAny().get().get(entry.getKey()).get().getValue() + 1;
+                        for(DataSet searchValue : this.table.all()) {
+                            if((long)searchValue.get(entry.getKey()).get().getValue() > (long) aiValue) {
+                                aiValue = (long) searchValue.get(entry.getKey()).get().getValue() + 2;
+                            }
+                        }
                     }
 
                     /*aiValue = (int) this.table.all().get(
@@ -188,7 +191,15 @@ public class Syntax {
 
             if(entry.getValue().isUnique()) {
 
-                if(!(this.table.find(content -> content.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue())).isEmpty())) {
+                if(!(this.table.find(content -> {
+                    boolean v = content.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue());
+                    if(v) {
+                        System.out.println(content.get(entry.getKey()).get().getValue());
+                        System.out.println(dataSet.get(entry.getKey()).get().getValue());
+                    }
+                    return v;
+                }).isEmpty())) {
+
                     return false;
                 }
 
