@@ -151,12 +151,15 @@ public class Syntax {
 
             if(entry.getValue().isAutoincrement()) {
 
-                int aiValue = 0;
+                long aiValue = 0;
 
                 if(!(this.table.all().isEmpty())) {
-                    aiValue = (int) this.table.all().get(
+
+                    final long tmp = aiValue;
+                    aiValue = (long) this.table.all().stream().filter(filterEntry -> (long) filterEntry.get(entry.getKey()).get().getValue() > tmp).findAny().get().get(entry.getKey()).get().getValue();
+                    /*aiValue = (int) this.table.all().get(
                             this.table.all().size() - 1
-                    ).get(entry.getKey()).get().getValue() + 1;
+                    ).get(entry.getKey()).get().getValue() + 1;*/
                 }
 
                 if(dataSet.get(entry.getKey()).isPresent()) {

@@ -16,6 +16,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
@@ -31,6 +33,8 @@ public class Table {
 
     private final File path;
     private final String name;
+
+    private String originalData = null;
 
     private Syntax syntax = new Syntax(this);
 
@@ -166,7 +170,12 @@ public class Table {
      */
     public void parse(String data) {
 
+        if(!(data == null) && data.equals(this.originalData)) {
+            return;
+        }
+
         Gson gson = new Gson();
+        this.originalData = data;
 
         try {
             JsonObject head = gson.fromJson(data, JsonObject.class);
