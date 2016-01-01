@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -139,7 +140,15 @@ public class SweetDB {
             }
 
             if(extension.isPresent() && !(extension.get().equals("sweet"))) {
-                table.getPath().renameTo(new File(table.getPath() + ".sweet"));
+                if(this.isDebugging()) {
+                    throw new FileNotFoundException(String.format(
+                            "SweetDB couldn't find the file \"%s\" but the file has the wrong extension \"%s\". The file has the wrong file-extension or you didn't create the table yet.",
+                            table.getPath().toString().substring(0, typePos - 1) + ".sweet",
+                            extension
+                    ));
+                }
+
+                continue;
             }
 
             LineIterator lineIterator = FileUtils.lineIterator(table.getPath(), "UTF-8");
