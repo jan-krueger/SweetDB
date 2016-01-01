@@ -144,7 +144,6 @@ public class Syntax {
             if(!(entry.getValue().isNullable()) && !(entry.getValue().isAutoincrement())) {
 
                 if(dataSet.get(entry.getKey()).get().getValue() == null) {
-                    System.out.println("A");
                     return false;
                 }
 
