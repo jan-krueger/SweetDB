@@ -10,6 +10,7 @@ import de.SweetCode.SweetDB.Table.Table;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -149,36 +150,48 @@ public class Syntax {
 
             }
 
-            if(entry.getValue().isAutoincrement()) {
+            if(entry.getValue().isAutoincrement() && !(dataSet.get(entry.getKey()).isPresent())) {
 
                 Object aiValue = 0;
 
                 if(!(this.table.all().isEmpty())) {
 
                     if(entry.getValue().getDataType() == DataTypes.INTEGER) {
-                        aiValue = (int) this.table.all().get(
-                                this.table.all().size() - 1
-                        ).get(entry.getKey()).get().getValue() + 1;
+                        DataSet max = this.table.all().get(0);
+
+                        for(DataSet e : this.table.all()) {
+
+                            if((int)max.get(entry.getKey()).get().getValue() < (int) e.get(entry.getKey()).get().getValue()) {
+                                max = e;
+                            }
+
+                        }
+
+                        aiValue = (int) max.get(entry.getKey()).get().getValue() + 1;
                     }
 
                     if(entry.getValue().getDataType() == DataTypes.LONG) {
-                        aiValue = (long) this.table.all().get(
-                                this.table.all().size() - 1
-                        ).get(entry.getKey()).get().getValue() + 1;
+                        DataSet max = this.table.all().get(0);
+
+                        for(DataSet e : this.table.all()) {
+
+                            if((long)max.get(entry.getKey()).get().getValue() < (long) e.get(entry.getKey()).get().getValue()) {
+                                max = e;
+                            }
+
+                        }
+
+                        aiValue = (long) max.get(entry.getKey()).get().getValue() + 1;
                     }
 
                 }
 
-                if(dataSet.get(entry.getKey()).isPresent()) {
-                    dataSet.get(entry.getKey()).get().update(aiValue);
-                } else {
-                    dataSet.addField(new Field(
-                            this.table,
-                            entry.getKey(),
-                            aiValue
-                    ));
-                }
-
+                dataSet.addField(new Field(
+                        this.table,
+                        entry.getKey(),
+                        aiValue
+                ));
+ 
             }
 
             if(entry.getValue().isUnique()) {
