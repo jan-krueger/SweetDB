@@ -62,4 +62,36 @@ public class DataSet {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if(o == null) {
+            return false;
+        }
+
+        if(!(o instanceof DataSet)) {
+            return false;
+        }
+
+        if(o == this) {
+            return true;
+        }
+
+        DataSet dataSet = (DataSet) o;
+
+        for(Field field : dataSet.getFields()) {
+
+            if(!(this.get(field.getName()).isPresent())) {
+                return false;
+            }
+
+            if(!(field.getValue().equals(this.get(field.getName()).get().getValue()))) {
+                return false;
+            }
+
+        }
+
+        return true;
+    }
+
 }

@@ -16,8 +16,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
@@ -88,12 +86,12 @@ public class Table {
      * Inserts a DataSet into the table.
      * @param dataSet
      */
-    public boolean insert(DataSet dataSet) {
+    public boolean insert(DataSet dataSet, boolean update) {
 
         if(!(this.syntax.validate(dataSet))) {
             if(this.sweetDB.isDebugging()) {
                 throw new IllegalArgumentException(String.format(
-                        "Invalid insert query.",
+                        "Invalid insert query. Syntax: %s",
                         this.syntax.getAsString()
                 ));
             } else {
@@ -101,7 +99,24 @@ public class Table {
             }
         }
 
-        this.dataSets.add(dataSet);
+        DataSet brother = null;
+        for(DataSet entry : this.all()) {
+            if(entry.equals(dataSet)) {
+                brother = entry;
+                break;
+            }
+        }
+
+        if(brother == null) {
+            this.dataSets.add(dataSet);
+        } else if(update) {
+
+            brother.getFields().clear();
+            for(Field field : dataSet.getFields()) {
+                brother.addField(field);
+            }
+
+        }
 
         if(this.sweetDB.isAutosave()) {
             this.store();

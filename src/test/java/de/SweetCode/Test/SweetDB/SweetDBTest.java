@@ -170,7 +170,7 @@ public class SweetDBTest {
                 .add("name", "Yonas")
                 .add("active", true)
                 .add("time", Timestamp.from(Instant.now()))
-                .build();
+                .build(false);
 
         Assert.assertEquals(value, true);
 
@@ -183,7 +183,7 @@ public class SweetDBTest {
         table.insert()
             .add("active", false)
             .add("time", Timestamp.from(Instant.now()))
-        .build();
+        .build(false);
 
     }
 

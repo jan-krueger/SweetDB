@@ -9,14 +9,14 @@ import java.util.logging.Logger;
 /**
  * Created by Yonas on 29.12.2015.
  */
-public class Field<T> {
+public class Field {
 
     private Table table;
 
     private String name;
-    private T value;
+    private Object value;
 
-    public Field(Table table, String name, T value) {
+    public Field(Table table, String name, Object value) {
         this.table = table;
         this.name = name;
         this.value = value;
@@ -34,8 +34,8 @@ public class Field<T> {
      * Returns the value of the field.
      * @return
      */
-    public T getValue() {
-        return this.value;
+    public <V> V getValue() {
+        return (V) this.value;
     }
 
     /**
@@ -52,13 +52,13 @@ public class Field<T> {
      * Updates the value.
      * @param value
      */
-    public boolean update(T value) {
+    public boolean update(Object value) {
 
         if(this.value == value) {
             return true;
         }
 
-        T tmp = this.value;
+        Object tmp = this.value;
         this.value = value;
 
         if(!(this.table.getSyntax().validate(this))) {

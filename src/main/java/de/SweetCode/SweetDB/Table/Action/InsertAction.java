@@ -34,12 +34,12 @@ public class InsertAction {
      * @return
      */
     public <T> InsertAction add(String name, T value) {
-        this.fields.add(new Field<T>(this.table, name, value));
+        this.fields.add(new Field(this.table, name, value));
         return this;
     }
 
 
-    public boolean build() {
+    public boolean build(boolean update) {
 
         DataSet dataSet = new DataSet(this.table, this.fields);
 
@@ -54,7 +54,7 @@ public class InsertAction {
             }
         }
 
-        this.table.insert(dataSet);
+        this.table.insert(dataSet, update);
         return true;
 
     }
