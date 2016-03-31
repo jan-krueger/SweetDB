@@ -186,12 +186,13 @@ public class Syntax {
 
                 }
 
+                System.out.println("aiValue: " + aiValue);
                 dataSet.addField(new Field(
                         this.table,
                         entry.getKey(),
                         aiValue
                 ));
- 
+
             }
 
             if(entry.getValue().isUnique()) {

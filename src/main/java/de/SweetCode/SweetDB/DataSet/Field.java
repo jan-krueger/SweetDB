@@ -1,7 +1,11 @@
 package de.SweetCode.SweetDB.DataSet;
 
+import com.sun.istack.internal.logging.Logger;
 import de.SweetCode.SweetDB.DataType.DataType;
+import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Table;
+
+import java.util.logging.Level;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -42,7 +46,7 @@ public class Field<T> {
      * @return
      */
     public <V> V as(DataType dataType) {
-        return dataType.parse(this.value.toString());
+        return (V) dataType.parse(this.value.toString());
     }
 
     /**
@@ -73,6 +77,15 @@ public class Field<T> {
             this.value = tmp;
 
             if(this.table.getDatabase().isDebugging()) {
+                Logger.getLogger(SweetDB.class).log(
+                        Level.INFO,
+                        String.format(
+                                "SweetDB - Field (Method: Update) (%s|%s) - Invalid Value: %s",
+                                this.getName(),
+                                this.value.toString(),
+                                value.toString()
+                        )
+                );
                 throw new IllegalArgumentException("You provided an invalid value.");
             } else {
                 return false;
