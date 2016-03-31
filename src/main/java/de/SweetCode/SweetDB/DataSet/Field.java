@@ -49,16 +49,6 @@ public class Field<T> {
     }
 
     /**
-     *
-     * @param clazz
-     * @param <V>
-     * @return
-     */
-    public <V> V as(Class<V> clazz) {
-        return (V) clazz.getClass().cast(this.value);
-    }
-
-    /**
      * Updates the value.
      * @param value
      */
