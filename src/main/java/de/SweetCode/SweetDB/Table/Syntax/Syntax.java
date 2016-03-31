@@ -10,7 +10,6 @@ import de.SweetCode.SweetDB.Table.Table;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -186,7 +185,6 @@ public class Syntax {
 
                 }
 
-                System.out.println("aiValue: " + aiValue);
                 dataSet.addField(new Field(
                         this.table,
                         entry.getKey(),
