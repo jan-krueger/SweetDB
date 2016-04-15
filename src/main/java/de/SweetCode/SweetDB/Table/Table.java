@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sun.deploy.util.StringUtils;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.DataType.DataType;
@@ -264,7 +263,7 @@ public class Table {
                                     this.getName(),
                                     entry.toString(),
                                     this.syntax.getAsString(),
-                                    StringUtils.join(this.syntax.missingFields(entry.getAsJsonObject()), ", ")
+                                    this.syntax.missingFields(entry.getAsJsonObject()).size()
                             ));
                         }
 
