@@ -5,12 +5,13 @@ import com.google.gson.JsonObject;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.DataType.DataTypes;
+import de.SweetCode.SweetDB.Query;
 import de.SweetCode.SweetDB.Table.Table;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -84,11 +85,19 @@ public class Syntax {
      */
     public List<String> missingFields(JsonObject object) {
 
-        return this.syntax.entrySet().stream().filter(entry -> !(object.has(entry.getKey()))).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> fields = new ArrayList<>();
+
+        for(SyntaxRule syntaxRule : this.syntax.values()) {
+            if(!(object.has(syntaxRule.getFieldName()))) {
+                fields.add(syntaxRule.getFieldName());
+            }
+        }
+
+        return fields;
 
     }
 
-    public boolean validate(Field field) {
+    public boolean validate(final Field field) {
 
         SyntaxRule syntaxRule = this.syntax.get(field.getName());
 
@@ -118,7 +127,12 @@ public class Syntax {
 
         if(syntaxRule.isUnique() || syntaxRule.isAutoincrement()) {
 
-            if(this.table.all().stream().filter(dataSet -> dataSet.get(field.getName()).get().getValue().equals(field.getValue())).findAny().isPresent()) {
+            if(this.table.findFirst(new Query() {
+                @Override
+                public boolean matches(DataSet dataSet) {
+                    return dataSet.get(field.getName()).get().getValue().equals(field.getValue());
+                }
+            }).isPresent()) {
                 return false;
             }
 
@@ -133,9 +147,9 @@ public class Syntax {
      * @param dataSet
      * @return
      */
-    public boolean validate(DataSet dataSet) {
+    public boolean validate(final DataSet dataSet) {
 
-        for(Map.Entry<String, SyntaxRule> entry : this.syntax.entrySet()) {
+        for(final Map.Entry<String, SyntaxRule> entry : this.syntax.entrySet()) {
 
             if(!(dataSet.get(entry.getKey()).isPresent()) && !(entry.getValue().isAutoincrement())) {
                 return false;
@@ -195,8 +209,12 @@ public class Syntax {
 
             if(entry.getValue().isUnique()) {
 
-                if(!(this.table.find(content -> content.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue())).isEmpty())) {
-
+                if(this.table.findFirst(new Query() {
+                    @Override
+                    public boolean matches(DataSet checkSet) {
+                        return checkSet.get(entry.getKey()).get().getValue().equals(dataSet.get(entry.getKey()).get().getValue());
+                    }
+                }).isPresent()) {
                     return false;
                 }
 
@@ -213,7 +231,7 @@ public class Syntax {
      * @param object
      * @return
      */
-    public boolean parseValidation(JsonObject object) {
+    public boolean parseValidation(final JsonObject object) {
 
         //TODO improve validation
 
@@ -221,7 +239,7 @@ public class Syntax {
             return false;
         }
 
-        for(Map.Entry<String, SyntaxRule> entry : this.syntax.entrySet()) {
+        for(final Map.Entry<String, SyntaxRule> entry : this.syntax.entrySet()) {
 
             if(!(object.has(entry.getKey())) && !(entry.getValue().isAutoincrement())) {
                 return false;
@@ -237,7 +255,12 @@ public class Syntax {
 
             if(entry.getValue().isUnique()) {
 
-                if(!(this.table.find(content -> content.get(entry.getKey()).get().getValue().equals(object.get(entry.getKey()).getAsString())).isEmpty())) {
+                if(this.table.findFirst(new Query() {
+                    @Override
+                    public boolean matches(DataSet checkSet) {
+                        return checkSet.get(entry.getKey()).get().getValue().equals(object.get(entry.getKey()).getAsString());
+                    }
+                }).isPresent()) {
                     return false;
                 }
 

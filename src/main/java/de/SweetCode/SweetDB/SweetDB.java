@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -97,7 +96,13 @@ public class SweetDB {
 
     public Optional<Table> table(String tableName) {
 
-        return this.tables.stream().filter(table -> table.getName().equals(tableName)).findFirst();
+        for(Table table : this.tables) {
+            if(table.getName().equals(tableName)) {
+                return Optional.of(table);
+            }
+        }
+
+        return Optional.empty();
 
     }
 
@@ -115,7 +120,9 @@ public class SweetDB {
 
     public void store() {
 
-        this.tables.forEach(table -> table.store());
+        for(Table table : this.tables) {
+            table.store();
+        }
 
     }
 
@@ -168,7 +175,10 @@ public class SweetDB {
 
                 StringBuilder stringBuilder = new StringBuilder();
 
-                lineIterator.forEachRemaining(line -> stringBuilder.append(line));
+                while(lineIterator.hasNext()) {
+                    stringBuilder.append(lineIterator.next());
+                }
+
                 raw = Optional.of(stringBuilder.toString());
 
             } finally {

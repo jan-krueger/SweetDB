@@ -2,11 +2,15 @@ package de.SweetCode.SweetDB.Table;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.deploy.util.StringUtils;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.DataType.DataType;
 import de.SweetCode.SweetDB.DataType.DataTypes;
+import de.SweetCode.SweetDB.Optional;
+import de.SweetCode.SweetDB.Query;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Action.InsertAction;
 import de.SweetCode.SweetDB.Table.Syntax.Syntax;
@@ -16,10 +20,11 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -47,7 +52,7 @@ public class Table {
 
     public Table(SweetDB sweetDB, File path, List<SyntaxRule> syntaxRules) {
         this(sweetDB, path);
-        syntaxRules.forEach(rule -> this.syntax.add(rule));
+        for(SyntaxRule entry : syntaxRules) this.syntax.add(entry);
     }
 
     public SweetDB getDatabase() {
@@ -86,7 +91,7 @@ public class Table {
      * Inserts a DataSet into the table.
      * @param dataSet
      */
-    public boolean insert(DataSet dataSet, boolean update) {
+    public boolean insert(DataSet dataSet) {
 
         if(!(this.syntax.validate(dataSet))) {
             if(this.sweetDB.isDebugging()) {
@@ -99,24 +104,7 @@ public class Table {
             }
         }
 
-        DataSet brother = null;
-        for(DataSet entry : this.all()) {
-            if(entry.equals(dataSet)) {
-                brother = entry;
-                break;
-            }
-        }
-
-        if(brother == null) {
-            this.dataSets.add(dataSet);
-        } else if(update) {
-
-            brother.getFields().clear();
-            for(Field field : dataSet.getFields()) {
-                brother.addField(field);
-            }
-
-        }
+         this.dataSets.add(dataSet);
 
         if(this.sweetDB.isAutosave()) {
             this.store();
@@ -125,26 +113,58 @@ public class Table {
         return true;
     }
 
+    public boolean update(DataSet dataSet, Query query) {
+
+        if(!(this.syntax.validate(dataSet))) {
+            if(this.sweetDB.isDebugging()) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid update query. Syntax: %s",
+                        this.syntax.getAsString()
+                ));
+            } else {
+                return false;
+            }
+        }
+
+        for(DataSet entry : this.find(query)) {
+            entry.getFields().clear();
+            for(Field field : entry.getFields()) {
+                entry.addField(field);
+            }
+        }
+
+        return true;
+
+    }
+
     /**
      * Finds a list of DataSets in the table.
-     * @param predicate
+     * @param query
      * @return
      */
-    public List<DataSet> find(Predicate<? super DataSet> predicate) {
+    public List<DataSet> find(Query query) {
 
-        return this.dataSets.stream().filter(predicate).collect(Collectors.toCollection(ArrayList::new));
+        List<DataSet> list = new ArrayList<>();
+
+        for(DataSet dataSet : this.dataSets) {
+            if(query.matches(dataSet)) {
+                list.add(dataSet);
+            }
+        }
+
+        return list;
 
     }
 
-    public Optional<DataSet> findAny(Predicate<? super DataSet> predicate) {
+    public Optional<DataSet> findFirst(Query query) {
 
-        return this.dataSets.stream().filter(predicate).findAny();
+        for(DataSet dataSet : this.dataSets) {
+            if(query.matches(dataSet)) {
+                return Optional.of(dataSet);
+            }
+        }
 
-    }
-
-    public Optional<DataSet> findFirst(Predicate<? super DataSet> predicate) {
-
-        return this.dataSets.stream().filter(predicate).findFirst();
+        return Optional.empty();
 
     }
 
@@ -204,7 +224,7 @@ public class Table {
 
                 JsonArray syntaxRules = table.get().get("syntax").getAsJsonArray();
 
-                syntaxRules.forEach(entry -> {
+                for(JsonElement entry : syntaxRules) {
 
                     JsonObject syntaxRule = entry.getAsJsonObject();
 
@@ -230,30 +250,32 @@ public class Table {
                         ));
                     }
 
-                });
+                }
 
 
                 if(head.has("data") && !(this.syntax.getSyntax().isEmpty())) {
 
                     JsonArray dataSets = head.get("data").getAsJsonArray();
 
-                    dataSets.forEach(entry -> {
-
+                    for(JsonElement entry : dataSets) {
                         if(!(this.syntax.parseValidation(entry.getAsJsonObject()))) {
                             throw new IllegalArgumentException(String.format(
                                     "Invalid syntax in \"%s\" -> %s expected %s. Missing field(s): %s",
                                     this.getName(),
                                     entry.toString(),
                                     this.syntax.getAsString(),
-                                    String.join(", ", this.syntax.missingFields(entry.getAsJsonObject()))
+                                    StringUtils.join(this.syntax.missingFields(entry.getAsJsonObject()), ", ")
                             ));
                         }
 
-                        List<Field> fields = entry.getAsJsonObject().entrySet().stream().map(field -> new Field(this, field.getKey(), this.syntax.get(field.getKey()).getDataType().parse((field.getValue().isJsonNull() ? null : field.getValue().getAsString())))).collect(Collectors.toList());
+                        List<Field> fields = new ArrayList<>();
+                        for(Map.Entry<String, JsonElement> item : entry.getAsJsonObject().entrySet()) {
+                            fields.add(new Field(this, item.getKey(), this.syntax.get(item.getKey()).getDataType().parse((item.getValue().isJsonNull() ? null : item.getValue().getAsString()))));
+                        }
 
                         this.dataSets.add(new DataSet(this, fields));
 
-                    });
+                    }
 
                 }
             }
@@ -274,53 +296,57 @@ public class Table {
             this.executorService = Executors.newFixedThreadPool(this.sweetDB.getStorageThreads());
         }
 
-        Future<?> task = this.executorService.submit(() -> {
+        Future<?> task = this.executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                JsonObject headData = new JsonObject();
 
-            JsonObject headData = new JsonObject();
+                JsonObject tableData = new JsonObject();
+                JsonArray syntaxData = new JsonArray();
 
-            JsonObject tableData = new JsonObject();
-            JsonArray syntaxData = new JsonArray();
+                for(Map.Entry<String, SyntaxRule> entry : syntax.getSyntax().entrySet()) {
 
-            for(Map.Entry<String, SyntaxRule> entry : syntax.getSyntax().entrySet()) {
+                    JsonObject syntaxRule = new JsonObject();
+                    syntaxRule.addProperty("field", entry.getKey());
+                    syntaxRule.addProperty("dataType", entry.getValue().getDataType().getName());
+                    syntaxRule.addProperty("isNullable", entry.getValue().isNullable());
+                    syntaxRule.addProperty("isUnique", entry.getValue().isUnique());
+                    syntaxRule.addProperty("isAutoincrement", entry.getValue().isAutoincrement());
 
-                JsonObject syntaxRule = new JsonObject();
-                syntaxRule.addProperty("field", entry.getKey());
-                syntaxRule.addProperty("dataType", entry.getValue().getDataType().getName());
-                syntaxRule.addProperty("isNullable", entry.getValue().isNullable());
-                syntaxRule.addProperty("isUnique", entry.getValue().isUnique());
-                syntaxRule.addProperty("isAutoincrement", entry.getValue().isAutoincrement());
-
-                syntaxData.add(syntaxRule);
-            }
-
-            JsonArray data = new JsonArray();
-            for(DataSet entry : dataSets) {
-
-                JsonObject dataEntry = new JsonObject();
-                for(Field field : entry.getFields()) {
-                    dataEntry.addProperty(field.getName(), (field.getValue() == null ? null : field.getValue().toString()));
+                    syntaxData.add(syntaxRule);
                 }
 
-                data.add(dataEntry);
+                JsonArray data = new JsonArray();
+                for(DataSet entry : dataSets) {
 
-            }
+                    JsonObject dataEntry = new JsonObject();
+                    for(Field field : entry.getFields()) {
+                        dataEntry.addProperty(field.getName(), (field.getValue() == null ? null : field.getValue().toString()));
+                    }
 
-            tableData.add("syntax", syntaxData);
-            headData.add("table", tableData);
-            headData.add("data", data);
+                    data.add(dataEntry);
 
-            try {
-
-                if(!(path.exists())) {
-                    path.createNewFile();
                 }
 
-                FileUtils.write(path, headData.toString(), "UTF-8", false);
-            } catch (IOException e) {
-                e.printStackTrace(); //TODO
-            }
+                tableData.add("syntax", syntaxData);
+                headData.add("table", tableData);
+                headData.add("data", data);
 
+                try {
+
+                    if(!(path.exists())) {
+                        path.createNewFile();
+                    }
+
+                    FileUtils.write(path, headData.toString(), "UTF-8", false);
+                } catch (IOException e) {
+                    e.printStackTrace(); //TODO
+                }
+
+            }
         });
+
+
 
         try {
             task.get(30, TimeUnit.SECONDS);

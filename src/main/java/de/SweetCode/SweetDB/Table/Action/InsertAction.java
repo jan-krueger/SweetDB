@@ -39,7 +39,7 @@ public class InsertAction {
     }
 
 
-    public boolean build(boolean update) {
+    public boolean build() {
 
         DataSet dataSet = new DataSet(this.table, this.fields);
 
@@ -54,7 +54,7 @@ public class InsertAction {
             }
         }
 
-        this.table.insert(dataSet, update);
+        this.table.insert(dataSet);
         return true;
 
     }

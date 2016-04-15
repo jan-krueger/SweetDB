@@ -2,8 +2,7 @@ package de.SweetCode.SweetDB.Table.Syntax;
 
 import de.SweetCode.SweetDB.DataType.DataType;
 import de.SweetCode.SweetDB.DataType.DataTypes;
-
-import java.util.Optional;
+import de.SweetCode.SweetDB.Optional;
 
 /**
  * Created by Yonas on 30.12.2015.

@@ -1,5 +1,6 @@
 package de.SweetCode.SweetDB.Table.Action;
 
+import de.SweetCode.SweetDB.Optional;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Syntax.SyntaxRule;
 import de.SweetCode.SweetDB.Table.Table;
@@ -7,7 +8,6 @@ import de.SweetCode.SweetDB.Table.Table;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Yonas on 29.12.2015.

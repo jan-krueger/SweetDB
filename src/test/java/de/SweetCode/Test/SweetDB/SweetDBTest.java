@@ -3,6 +3,7 @@ package de.SweetCode.Test.SweetDB;
 import de.SweetCode.SweetDB.DataSet.DataSet;
 import de.SweetCode.SweetDB.DataSet.Field;
 import de.SweetCode.SweetDB.DataType.DataTypes;
+import de.SweetCode.SweetDB.Query;
 import de.SweetCode.SweetDB.SweetDB;
 import de.SweetCode.SweetDB.Table.Table;
 import org.apache.commons.io.FileUtils;
@@ -14,8 +15,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 
 /**
  * Created by Yonas on 01.01.2016.
@@ -34,10 +33,11 @@ public class SweetDBTest {
         this.databasePath = this.temporaryFolder.getRoot().getPath();
         File file = this.temporaryFolder.newFile("users-mockup.sweet");
         FileUtils.write(file,
-                "{\"table\":{\"syntax\":[{\"field\":\"name\",\"dataType\":\"string\",\"isNullable\":true,\"isUnique\":false,\"isAutoincrement\":false},{\"field\":\"active\",\"dataType\":\"boolean\",\"isNullable\":false,\"isUnique\":false,\"isAutoincrement\":false},{\"field\":\"id\",\"dataType\":\"integer\",\"isNullable\":false,\"isUnique\":true,\"isAutoincrement\":true},{\"field\":\"time\",\"dataType\":\"timestamp\",\"isNullable\":false,\"isUnique\":false,\"isAutoincrement\":false}]},\"data\":[{\"name\":\"Jan\",\"active\":\"true\",\"time\":\"2015-12-31 18:05:27.094\",\"id\":\"0\"},{\"name\":\"Jonas\",\"active\":\"true\",\"time\":\"2015-12-31 18:09:16.444\",\"id\":\"1\"},{\"name\":\"Jonas\",\"active\":\"true\",\"time\":\"2015-12-31 18:09:16.443\",\"id\":\"2\"}]}",
+                "{\"table\":{\"syntax\":[{\"field\":\"id\",\"dataType\":\"integer\",\"isNullable\":false,\"isUnique\":true,\"isAutoincrement\":true},{\"field\":\"name\",\"dataType\":\"string\",\"isNullable\":false,\"isUnique\":false,\"isAutoincrement\":false},{\"field\":\"active\",\"dataType\":\"boolean\",\"isNullable\":false,\"isUnique\":false,\"isAutoincrement\":false}]},\"data\":[{\"name\":\"Jan\",\"active\":\"true\",\"id\":\"0\"},{\"name\":\"Jonas\",\"active\":\"true\",\"id\":\"1\"}]}",
                 "UTF-8",
                 false
         );
+
 
         this.database = new SweetDB(this.databasePath, "users-mockup");
         this.database.debugging(true);
@@ -133,17 +133,22 @@ public class SweetDBTest {
         Table table = this.database.table("users-mockup").get();
 
         Assert.assertEquals(
-                table.find(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isEmpty(),
+                table.find(new Query() {
+                    @Override
+                    public boolean matches(DataSet dataSet) {
+                        return dataSet.get("name").get().getValue().equals("Jonas");
+                    }
+                }).isEmpty(),
                 false
         );
 
         Assert.assertEquals(
-                table.findAny(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isPresent(),
-                true
-        );
-
-        Assert.assertEquals(
-                table.findFirst(dataSet -> dataSet.get("name").get().getValue().equals("Jonas")).isPresent(),
+                table.findFirst(new Query() {
+                    @Override
+                    public boolean matches(DataSet dataSet) {
+                        return dataSet.get("name").get().getValue().equals("Jonas");
+                    }
+                }).isPresent(),
                 true
         );
 
@@ -154,9 +159,14 @@ public class SweetDBTest {
 
         Table table = this.database.table("users-mockup").get();
 
-        DataSet dataSet = table.findFirst(entry -> entry.get("name").get().getValue().equals("Jan")).get();
+        DataSet dataSet = table.findFirst(new Query() {
+            @Override
+            public boolean matches(DataSet dataSet) {
+                return dataSet.get("name").get().getValue().equals("Jan");
+            }
+        }).get();
 
-        Assert.assertEquals(dataSet.getFields().size(), 4);
+        Assert.assertEquals(dataSet.getFields().size(), 3);
 
         Assert.assertEquals(dataSet.delete(), true);
 
@@ -169,8 +179,7 @@ public class SweetDBTest {
         boolean value = table.insert()
                 .add("name", "Yonas")
                 .add("active", true)
-                .add("time", Timestamp.from(Instant.now()))
-                .build(false);
+                .build();
 
         Assert.assertEquals(value, true);
 
@@ -182,8 +191,7 @@ public class SweetDBTest {
         Table table = this.database.table("users-mockup").get();
         table.insert()
             .add("active", false)
-            .add("time", Timestamp.from(Instant.now()))
-        .build(false);
+        .build();
 
     }
 
@@ -192,7 +200,12 @@ public class SweetDBTest {
 
         Table table = this.database.table("users-mockup").get();
 
-        DataSet dataSet = table.findFirst(entry -> entry.get("name").get().getValue().equals("Jan")).get();
+        DataSet dataSet = table.findFirst(new Query() {
+            @Override
+            public boolean matches(DataSet dataSet) {
+                return dataSet.get("name").get().getValue().equals("Jan");
+            }
+        }).get();
 
         Field field = dataSet.get("name").get();
         Assert.assertEquals(field.getName(), "name");

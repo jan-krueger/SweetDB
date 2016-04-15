@@ -1,11 +1,11 @@
 package de.SweetCode.SweetDB.DataSet;
 
+import de.SweetCode.SweetDB.Optional;
 import de.SweetCode.SweetDB.Table.Table;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Yonas on 29.12.2015.
@@ -34,8 +34,13 @@ public class DataSet {
 
     public Optional<Field> get(String name) {
 
-        return this.fields.stream().filter(field -> field.getName().equals(name)).findFirst();
+        for(Field field : this.fields) {
+            if(field.getName().equals(name)) {
+                return Optional.of(field);
+            }
+        }
 
+        return Optional.empty();
     }
 
     public boolean delete() {

@@ -1,7 +1,7 @@
 package de.SweetCode.SweetDB.DataType;
 
-import java.sql.Timestamp;
-import java.util.Optional;
+import de.SweetCode.SweetDB.Optional;
+
 import java.util.UUID;
 
 /**
@@ -43,24 +43,6 @@ public enum DataTypes implements DataType {
         @Override
         public Byte parse(String value) {
             return Byte.parseByte(value);
-        }
-
-    },
-    TIMESTAMP {
-
-        @Override
-        public String getName() {
-            return "timestamp";
-        }
-
-        @Override
-        public String getSyntax() {
-            return "2015-11-21 13:45:00";
-        }
-
-        @Override
-        public Timestamp parse(String value) {
-            return java.sql.Timestamp.valueOf(value);
         }
 
     },
@@ -195,7 +177,7 @@ public enum DataTypes implements DataType {
 
     public static Optional<DataType> get(String name) {
 
-        for(DataTypes entry : values()) {
+        for(DataType entry : values()) {
 
             if(entry.getName().equals(name)) { //TODO maybe equalsIgnoreCase instead of equals
                 return Optional.of(entry);
